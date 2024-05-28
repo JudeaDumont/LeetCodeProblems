@@ -1,5 +1,8 @@
 package org.example;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 public class Main {
     public static void main(String[] args) {
 
@@ -63,5 +66,56 @@ public class Main {
             }
         }
         return result;
+    }
+
+    public static long maximumHappinessSumSLOW(int[] happiness, int k) {
+        TreeMap<Integer, Integer> treeMap = new TreeMap<>();
+        for (int i : happiness) {
+            if (treeMap.containsKey(i)) {
+                treeMap.put(i, treeMap.get(i) + 1);
+            } else {
+                treeMap.put(i, 1);
+            }
+        }
+        long max = 0;
+        for (int i = 0; i < k; i++) {
+            int selected = countingPullLastSLOW(treeMap) - i;
+            max += Math.max(selected, 0);
+        }
+
+        return max;
+    }
+
+    public static int countingPullLastSLOW(TreeMap<Integer, Integer> treeMap) {
+        Map.Entry<Integer, Integer> entry = treeMap.lastEntry();
+        Integer value = entry.getKey();
+        int count = entry.getValue() - 1;
+        if (count == 0) {
+            treeMap.pollLastEntry();
+        } else {
+            treeMap.put(value, count);
+        }
+        return value;
+    }
+
+    public static long maximumHappinessSumSLOWER(int[] happiness, int k) {
+        boolean[] visited = new boolean[happiness.length];
+
+        long total = 0;
+        for (int i = 0; i < k; i++) {
+            long max = Long.MIN_VALUE;
+            int maxIndex = -1;
+            for (int i1 = 0; i1 < happiness.length; i1++) {
+                if (!visited[i1]) {
+                    if (max < happiness[i1] - i) {
+                        max = Math.max(happiness[i1] - i, 0);
+                        maxIndex = i1;
+                    }
+                }
+            }
+            visited[maxIndex] = true;
+            total += max;
+        }
+        return total;
     }
 }
